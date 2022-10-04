@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "rollup-plugin-vue": "^6.0.0"
+  }
+}
