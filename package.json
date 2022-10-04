@@ -1,5 +1,26 @@
 {
-  "dependencies": {
+  "name": "vue-barchart-plugin",
+  "description": "Crear Gráficas de barras sencillas en Vue",
+  "version": "1.0.0",
+  "main": "BarchartPlugin.js",
+  "devDependencies": {
     "rollup-plugin-vue": "^6.0.0"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elcoruco/barchart-vue3-plugin.git"
+  },
+  "keywords": [
+    "barchart",
+    "vue"
+  ],
+  "author": "el.coruco@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elcoruco/barchart-vue3-plugin/issues"
+  },
+  "homepage": "https://github.com/elcoruco/barchart-vue3-plugin#readme"
 }
