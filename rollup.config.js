@@ -1,7 +1,7 @@
 import vue from 'rollup-plugin-vue'
 
 export default {
-  input : './BarchartPlugin.js',
+  input : './src/BarchartPlugin.js',
   output : {
     format : 'esm',
     file : 'dist/BarchartPlugin.js'

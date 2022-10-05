@@ -15,7 +15,7 @@ const script = {};
 
 
 script.render = render;
-script.__file = "BarchartView.vue";
+script.__file = "src/BarchartView.vue";
 
 var BarchartPlugin = {
   install : (app, options) => {
