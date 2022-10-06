@@ -15,7 +15,8 @@ const props = defineProps({
   width      : Number, 
   height     : Number, 
   background : String,
-  data       : Array
+  data       : Array,
+  margin     : Object
 });
 
 /**
@@ -59,7 +60,6 @@ const yScale = computed(() => {
   let domain = [y0.value, Math.max(...curr)];
   let range = [height.value - margin.value.bottom, margin.value.top];
 
-  console.log("curr:", curr, domain, range);
   
   return scaleLinear()
     .domain(domain)
@@ -71,8 +71,6 @@ const yScale = computed(() => {
  * 
  */
 const f          = format(",");
-
-console.log("data: ", props.data, props.data.map(d => d.key));
 
 </script>
 <template>
@@ -110,14 +108,13 @@ console.log("data: ", props.data, props.data.map(d => d.key));
           :transform="`translate(${xScale(tick) + xScale.bandwidth() / 2}, 0)`"
           :key="`x-tick-${i}`">
           <line x1="0" y1="0" x2="0" :y2="3" stroke="black" />
-          <!-- <text
+          <text
             x="0"
             y="5"
             text-anchor="middle"
-            alignment-baseline="hanging"
-            :font-size="ticks.fontSize">
-            {{ short(tick) }}
-          </text> -->
+            alignment-baseline="hanging">
+            {{ tick }}
+          </text>
         </g>
 
         <!-- Axis -->
@@ -126,6 +123,37 @@ console.log("data: ", props.data, props.data.map(d => d.key));
           y1="0"
           :x2="width - margin.right"
           y2="0"
+          stroke="black" />
+      </g>
+
+      <!-- yScaleAxis -->
+      <g :transform="`translate(${margin.left},0)`">
+        <!-- ticks -->
+        <g v-for="(tick, i) of yScale.ticks()"
+          :transform="`translate(0, ${yScale(tick)})`"
+          :key="`y-tick-${i}`">
+          <line
+            :x1="-6"
+            y1="0"
+            :x2="0"
+            y2="0"
+            stroke="black"
+            :fill-opacity=".5" />
+          <text
+            y="0"
+            x="-9"
+            text-anchor="end"
+            alignment-baseline="middle">
+            {{ f(tick) }}
+          </text>
+        </g>
+
+        <!-- Axis -->
+        <line
+          :x1="0"
+          :y1="margin.top"
+          :x2="0"
+          :y2="height - margin.bottom"
           stroke="black" />
       </g>
     </svg>

@@ -1,4 +1,4 @@
-import { ref, computed, openBlock, createElementBlock, normalizeStyle, unref, Fragment, renderList, createCommentVNode, createElementVNode } from 'vue';
+import { ref, computed, openBlock, createElementBlock, normalizeStyle, unref, Fragment, renderList, createCommentVNode, createElementVNode, toDisplayString } from 'vue';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
 
@@ -15,7 +15,30 @@ const _hoisted_7 = /*#__PURE__*/createElementVNode("line", {
   y2: 3,
   stroke: "black"
 }, null, -1 /* HOISTED */);
-const _hoisted_8 = ["x1", "x2"];
+const _hoisted_8 = {
+  x: "0",
+  y: "5",
+  "text-anchor": "middle",
+  "alignment-baseline": "hanging"
+};
+const _hoisted_9 = ["x1", "x2"];
+const _hoisted_10 = ["transform"];
+const _hoisted_11 = ["transform"];
+const _hoisted_12 = /*#__PURE__*/createElementVNode("line", {
+  x1: -6,
+  y1: "0",
+  x2: 0,
+  y2: "0",
+  stroke: "black",
+  "fill-opacity": .5
+}, null, -1 /* HOISTED */);
+const _hoisted_13 = {
+  y: "0",
+  x: "-9",
+  "text-anchor": "end",
+  "alignment-baseline": "middle"
+};
+const _hoisted_14 = ["y1", "y2"];
 
 /**
  * PROPERTIES
@@ -28,7 +51,8 @@ var script = {
   width      : Number, 
   height     : Number, 
   background : String,
-  data       : Array
+  data       : Array,
+  margin     : Object
 },
   setup(__props) {
 
@@ -81,7 +105,6 @@ const yScale = computed(() => {
   let domain = [y0.value, Math.max(...curr)];
   let range = [height.value - margin.value.bottom, margin.value.top];
 
-  console.log("curr:", curr, domain, range);
   
   return scaleLinear()
     .domain(domain)
@@ -92,9 +115,7 @@ const yScale = computed(() => {
  * HELPERS
  * 
  */
-format(",");
-
-console.log("data: ", props.data, props.data.map(d => d.key));
+const f          = format(",");
 
 
 return (_ctx, _cache) => {
@@ -137,7 +158,7 @@ return (_ctx, _cache) => {
             key: `x-tick-${i}`
           }, [
             _hoisted_7,
-            createCommentVNode(" <text\n            x=\"0\"\n            y=\"5\"\n            text-anchor=\"middle\"\n            alignment-baseline=\"hanging\"\n            :font-size=\"ticks.fontSize\">\n            {{ short(tick) }}\n          </text> ")
+            createElementVNode("text", _hoisted_8, toDisplayString(tick), 1 /* TEXT */)
           ], 8 /* PROPS */, _hoisted_6))
         }), 128 /* KEYED_FRAGMENT */)),
         createCommentVNode(" Axis "),
@@ -147,8 +168,31 @@ return (_ctx, _cache) => {
           x2: unref(width) - unref(margin).right,
           y2: "0",
           stroke: "black"
-        }, null, 8 /* PROPS */, _hoisted_8)
-      ], 8 /* PROPS */, _hoisted_5)
+        }, null, 8 /* PROPS */, _hoisted_9)
+      ], 8 /* PROPS */, _hoisted_5),
+      createCommentVNode(" yScaleAxis "),
+      createElementVNode("g", {
+        transform: `translate(${unref(margin).left},0)`
+      }, [
+        createCommentVNode(" ticks "),
+        (openBlock(true), createElementBlock(Fragment, null, renderList(unref(yScale).ticks(), (tick, i) => {
+          return (openBlock(), createElementBlock("g", {
+            transform: `translate(0, ${unref(yScale)(tick)})`,
+            key: `y-tick-${i}`
+          }, [
+            _hoisted_12,
+            createElementVNode("text", _hoisted_13, toDisplayString(unref(f)(tick)), 1 /* TEXT */)
+          ], 8 /* PROPS */, _hoisted_11))
+        }), 128 /* KEYED_FRAGMENT */)),
+        createCommentVNode(" Axis "),
+        createElementVNode("line", {
+          x1: 0,
+          y1: unref(margin).top,
+          x2: 0,
+          y2: unref(height) - unref(margin).bottom,
+          stroke: "black"
+        }, null, 8 /* PROPS */, _hoisted_14)
+      ], 8 /* PROPS */, _hoisted_10)
     ], 12 /* STYLE, PROPS */, _hoisted_3))
   ]))
 }
