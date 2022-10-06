@@ -16,7 +16,9 @@ const props = defineProps({
   height     : Number, 
   background : String,
   data       : Array,
-  margin     : Object
+  margin     : Object,
+  color      : String,
+  barPadding : String
 });
 
 /**
@@ -32,8 +34,8 @@ const defaultWidth  = ref(400);
 const xLabel        = ref();
 const yLabel        = ref();
 const minWidth      = ref();
-const barWidth      = ref(10);
-const color         = ref();
+const defaultBarPadding = ref(.1);
+const defaultColor      = ref('black');
 const defaultBackground = ref("white");
 const ticks         = ref();
 const y0            = ref(0);
@@ -44,6 +46,8 @@ const width      = computed( () => props.width || defaultWidth.value)
 const height     = computed( () => props.height || defaultHeight.value)
 const background = computed( () => props.background || defaultBackground.value)
 const margin     = computed( () => props.margin || defaultMargin.value)
+const color      = computed( () => props.color || defaultColor.value)
+const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
 
 
 // SCALES
@@ -52,7 +56,7 @@ const xScale = computed( () => {
   return scaleBand()
     .domain(props.data.map(d => d.key))
     .range([margin.value.left, width.value - margin.value.right])
-    .padding(.1)
+    .padding(barPadding.value)
 })
 
 const yScale = computed(() => {
@@ -89,6 +93,37 @@ const f          = format(",");
       stroke-linejoin="round"
       class="gf_barchart_svg">
 
+      <!-- yScaleAxis -->
+      <g :transform="`translate(${margin.left},0)`">
+        <!-- ticks -->
+        <g v-for="(tick, i) of yScale.ticks()"
+          :transform="`translate(0, ${yScale(tick)})`"
+          :key="`y-tick-${i}`">
+          <line
+            :x1="0"
+            y1="0"
+            :x2="width - margin.left - margin.right"
+            y2="0"
+            stroke="grey"
+            :fill-opacity=".5" />
+          <text
+            y="0"
+            x="-9"
+            text-anchor="end"
+            alignment-baseline="middle">
+            {{ f(tick) }}
+          </text>
+        </g>
+
+        <!-- Axis -->
+        <!-- <line
+          :x1="0"
+          :y1="margin.top"
+          :x2="0"
+          :y2="height - margin.bottom"
+          stroke="black" /> -->
+      </g>
+
       <rect
         v-for="(d, i) of data"
         :key="`bar-${i}`"
@@ -97,17 +132,15 @@ const f          = format(",");
         :x="xScale(d.key)"
         :y="yScale(d.value)"
         class="gf_barchart_item"
-        fill-opacity="1"
-        :fill="'red'"
-        :style="{ fill: 'red' }"></rect>
-
+        :fill="color"></rect>
+      
       <!-- xScaleAxis -->
       <g :transform="`translate(0, ${height - margin.bottom})`">
         <!-- ticks -->
         <g v-for="(tick, i) of xScale.domain()"
           :transform="`translate(${xScale(tick) + xScale.bandwidth() / 2}, 0)`"
           :key="`x-tick-${i}`">
-          <line x1="0" y1="0" x2="0" :y2="3" stroke="black" />
+          <!-- <line x1="0" y1="0" x2="0" :y2="3" stroke="black" /> -->
           <text
             x="0"
             y="5"
@@ -123,38 +156,8 @@ const f          = format(",");
           y1="0"
           :x2="width - margin.right"
           y2="0"
-          stroke="black" />
-      </g>
-
-      <!-- yScaleAxis -->
-      <g :transform="`translate(${margin.left},0)`">
-        <!-- ticks -->
-        <g v-for="(tick, i) of yScale.ticks()"
-          :transform="`translate(0, ${yScale(tick)})`"
-          :key="`y-tick-${i}`">
-          <line
-            :x1="-6"
-            y1="0"
-            :x2="0"
-            y2="0"
-            stroke="black"
-            :fill-opacity=".5" />
-          <text
-            y="0"
-            x="-9"
-            text-anchor="end"
-            alignment-baseline="middle">
-            {{ f(tick) }}
-          </text>
-        </g>
-
-        <!-- Axis -->
-        <line
-          :x1="0"
-          :y1="margin.top"
-          :x2="0"
-          :y2="height - margin.bottom"
-          stroke="black" />
+          stroke="black"
+          stroke-width="2" />
       </g>
     </svg>
   </div>
