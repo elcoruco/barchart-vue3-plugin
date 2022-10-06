@@ -11,7 +11,7 @@ import { format } from "d3-format";
  * PROPERTIES
  * 
  */
-const props      = defineProps({ 
+const props = defineProps({ 
   width      : Number, 
   height     : Number, 
   background : String,
@@ -22,28 +22,49 @@ const props      = defineProps({
  * CONFIG
  * 
  */
+
+// DEFAULT VALUES
+//
 const defaultMargin = ref({top : 10, right : 10, bottom : 50, left : 50});
 const defaultHeight = ref(400);
 const defaultWidth  = ref(400);
-const xLabel     = ref();
-const yLabel     = ref();
-const minWidth   = ref();
-const barWidth   = ref(10);
-const color      = ref();
+const xLabel        = ref();
+const yLabel        = ref();
+const minWidth      = ref();
+const barWidth      = ref(10);
+const color         = ref();
 const defaultBackground = ref("white");
-const ticks      = ref();
+const ticks         = ref();
+const y0            = ref(0);
 
+// PROPERTIES
+//
 const width      = computed( () => props.width || defaultWidth.value)
 const height     = computed( () => props.height || defaultHeight.value)
 const background = computed( () => props.background || defaultBackground.value)
 const margin     = computed( () => props.margin || defaultMargin.value)
 
+
+// SCALES
+//
 const xScale = computed( () => {
   return scaleBand()
     .domain(props.data.map(d => d.key))
     .range([margin.value.left, width.value - margin.value.right])
     .padding(.1)
 })
+
+const yScale = computed(() => {
+  let curr = props.data.map(d => d.value);
+  let domain = [y0.value, Math.max(...curr)];
+  let range = [height.value - margin.value.bottom, margin.value.top];
+
+  console.log("curr:", curr, domain, range);
+  
+  return scaleLinear()
+    .domain(domain)
+        .rangeRound(range);
+});
 
 /**
  * HELPERS
@@ -55,7 +76,7 @@ console.log("data: ", props.data, props.data.map(d => d.key));
 
 </script>
 <template>
-  <div>
+  <div class="gf_barchart_container">
     <h1></h1>
     <svg
       ref="svg"
@@ -74,13 +95,39 @@ console.log("data: ", props.data, props.data.map(d => d.key));
         v-for="(d, i) of data"
         :key="`bar-${i}`"
         :width="xScale.bandwidth()"
-        :height="5"
+        :height="height - yScale(d.value) - margin.bottom"
         :x="xScale(d.key)"
-        :y="20"
-        class="gf-barchart-item"
+        :y="yScale(d.value)"
+        class="gf_barchart_item"
         fill-opacity="1"
         :fill="'red'"
         :style="{ fill: 'red' }"></rect>
+
+      <!-- xScaleAxis -->
+      <g :transform="`translate(0, ${height - margin.bottom})`">
+        <!-- ticks -->
+        <g v-for="(tick, i) of xScale.domain()"
+          :transform="`translate(${xScale(tick) + xScale.bandwidth() / 2}, 0)`"
+          :key="`x-tick-${i}`">
+          <line x1="0" y1="0" x2="0" :y2="3" stroke="black" />
+          <!-- <text
+            x="0"
+            y="5"
+            text-anchor="middle"
+            alignment-baseline="hanging"
+            :font-size="ticks.fontSize">
+            {{ short(tick) }}
+          </text> -->
+        </g>
+
+        <!-- Axis -->
+        <line
+          :x1="margin.left"
+          y1="0"
+          :x2="width - margin.right"
+          y2="0"
+          stroke="black" />
+      </g>
     </svg>
   </div>
 </template>
