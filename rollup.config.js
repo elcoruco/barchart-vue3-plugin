@@ -9,5 +9,6 @@ export default {
     format : 'esm',
     file : 'dist/BarchartPlugin.js'
   },
+  external : ["vue"],
   plugins: [ summary(), vue(), resolve(), terser() ]
 }
