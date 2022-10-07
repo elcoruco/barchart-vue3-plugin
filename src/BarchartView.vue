@@ -18,7 +18,7 @@ const props = defineProps({
   data       : Array,
   margin     : Object,
   color      : String,
-  barPadding : String
+  barPadding : Number
 });
 
 /**
