@@ -3,7 +3,7 @@
  * DEPENDENCIES
  * 
  */
-import { ref, computed, onMounted/*, watch*/ } from "vue";
+import { ref, computed/*, onMounted, watch*/ } from "vue";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { format } from "d3-format";
 
