@@ -1,5 +1,5 @@
 {
-  "name": "vue-barchart-plugin",
+  "name": "@elcoruco/vue-barchart-plugin",
   "description": "Crear Gráficas de barras sencillas en Vue",
   "version": "1.0.38",
   "main": "./dist/BarchartPlugin.js",
