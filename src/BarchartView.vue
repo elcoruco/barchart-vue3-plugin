@@ -18,7 +18,9 @@ const props = defineProps({
   data       : Array,
   margin     : Object,
   color      : String,
-  barPadding : Number
+  barPadding : Number,
+  xAxis      : Object,
+  yAxis      : Object,
 });
 
 /**
@@ -28,17 +30,19 @@ const props = defineProps({
 
 // DEFAULT VALUES
 //
-const defaultMargin = ref({top : 10, right : 10, bottom : 50, left : 50});
-const defaultHeight = ref(400);
-const defaultWidth  = ref(400);
-const xLabel        = ref();
-const yLabel        = ref();
-const minWidth      = ref();
+const defaultMargin     = ref({top : 10, right : 10, bottom : 50, left : 50});
+const defaultHeight     = ref(400);
+const defaultWidth      = ref(400);
+const xLabel            = ref();
+const yLabel            = ref();
+const minWidth          = ref();
 const defaultBarPadding = ref(.1);
 const defaultColor      = ref('black');
 const defaultBackground = ref("white");
-const ticks         = ref();
-const y0            = ref(0);
+const y0                = ref(0);
+const defaultXAxis      =ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
+
+
 
 // PROPERTIES
 //
@@ -48,7 +52,7 @@ const background = computed( () => props.background || defaultBackground.value)
 const margin     = computed( () => props.margin || defaultMargin.value)
 const color      = computed( () => props.color || defaultColor.value)
 const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
-
+const xAxis      = computed( () => props.xAxis ? Object.assign(defaultXAxis.value, props.xAxis) : props.xAxis )
 
 // SCALES
 //
@@ -140,7 +144,7 @@ const f          = format(",");
         <g v-for="(tick, i) of xScale.domain()"
           :transform="`translate(${xScale(tick) + xScale.bandwidth() / 2}, 0)`"
           :key="`x-tick-${i}`">
-          <!-- <line x1="0" y1="0" x2="0" :y2="3" stroke="black" /> -->
+          <line v-if="xAxis.showGrid" x1="0" y1="0" x2="0" :y2="3" stroke="black" />
           <text
             x="0"
             y="5"
