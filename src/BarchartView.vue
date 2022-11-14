@@ -149,6 +149,7 @@ const f          = format(",");
             x="0"
             y="5"
             text-anchor="middle"
+            :class="xAxis.textClass"
             alignment-baseline="hanging">
             {{ tick }}
           </text>
