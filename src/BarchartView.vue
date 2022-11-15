@@ -40,6 +40,7 @@ const defaultBarPadding = ref(.1);
 const defaultColor      = ref('black');
 const defaultBackground = ref("white");
 const y0                = ref(0);
+const showTooltip       = ref(false);
 const defaultXAxis      =ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
 const defaultYAxis      =ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
 
@@ -82,8 +83,9 @@ const yScale = computed(() => {
  */
 const f = format(",");
 
-const tooltipEnter = () => {
-  console.log("yooo");
+const tooltipEnter = (e,d) => {
+  showTooltip.value = true;
+  console.log(e,d)
 }
 
 const tooltipMove = () => {
@@ -91,7 +93,7 @@ const tooltipMove = () => {
 }
 
 const tooltipOut = () => {
-  console.log("out");
+  showTooltip.value = false;
 }
 </script>
 <template>
@@ -151,7 +153,10 @@ const tooltipOut = () => {
         :x="xScale(d.key)"
         :y="yScale(d.value)"
         class="gf_barchart_item"
-        :fill="color"></rect>
+        :fill="color"
+        @mouseenter="e => tooltipEnter(e, d)"
+        @mousemove="tooltipMove"
+        @mouseout="tooltipOut"></rect>
       
       <!-- xScaleAxis -->
       <g :transform="`translate(0, ${height - margin.bottom})`">
@@ -180,9 +185,6 @@ const tooltipOut = () => {
           stroke-width="2" />
       </g>
     </svg>
-    <div class="gf-tooltip" 
-    @mouseenter="tooltipEnter"
-    @mousemove="tooltipMove"
-    @mouseout="tooltipOut">Este es un tooltip</div>
+    <div class="gf-tooltip" v-if="showTooltip">Este es un tooltip</div>
   </div>
 </template>
