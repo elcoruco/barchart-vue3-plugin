@@ -109,7 +109,7 @@ const tooltipMove = () => {
 }
 
 const tooltipOut = () => {
-  showTooltip.value = false;
+  // showTooltip.value = false;
 }
 </script>
 <template>
@@ -210,7 +210,7 @@ const tooltipOut = () => {
 <style scoped>
 .gf-tooltip{
   display: block;
-  background: white;
+  background: red;
   position: fixed;
 }
 </style>
