@@ -48,10 +48,10 @@ const defaultBarPadding = ref(.1);
 const defaultColor      = ref('black');
 const defaultBackground = ref("white");
 const y0                = ref(0);
-const showTooltip       = ref(false);
 const defaultXAxis      = ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
 const defaultYAxis      = ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
 
+const showTooltip       = ref(false);
 const defaultTooltipFn  = d => `${d.key} : ${f(d.value)}`
 const tooltipHTML       = ref("");
 const tooltipTop        = ref('0px');
@@ -201,12 +201,16 @@ const tooltipOut = () => {
           stroke-width="2" />
       </g>
     </svg>
-    <div :style="{top : tooltipTop, left : tooltipLeft}" class="gf-tooltip" v-html="tooltipHTML"></div>
+    <div class="gf-tooltip" 
+    :style="{top : tooltipTop, left : tooltipLeft}"
+    v-if="showTooltip"
+    v-html="tooltipHTML"></div>
   </div>
 </template>
 <style scoped>
 .gf-tooltip{
   display: block;
-  background: whitesmoke;
+  background: white;
+  position: fixed;
 }
 </style>

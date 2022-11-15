@@ -1,0 +1,7 @@
+
+.gf-tooltip{
+  display: block;
+  background: white;
+  position: fixed;
+}
+
