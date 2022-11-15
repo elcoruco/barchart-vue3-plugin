@@ -202,15 +202,13 @@ const tooltipOut = () => {
       </g>
     </svg>
     <div class="gf-tooltip" 
-    :style="{top : tooltipTop, left : tooltipLeft}"
+    :style="{
+      top : tooltipTop, 
+      left : tooltipLeft,
+      display : 'block',
+      position : 'fixed'
+    }"
     v-if="showTooltip"
     v-html="tooltipHTML"></div>
   </div>
 </template>
-<style scoped>
-.gf-tooltip{
-  display: block;
-  background: red;
-  position: fixed;
-}
-</style>
