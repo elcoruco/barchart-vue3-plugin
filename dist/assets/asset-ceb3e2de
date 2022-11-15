@@ -1,0 +1,6 @@
+
+.gf-tooltip{
+  display: block;
+  background: whitesmoke;
+}
+
