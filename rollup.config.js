@@ -11,5 +11,5 @@ export default {
     file : 'dist/BarchartPlugin.js'
   },
   external : ["vue"],
-  plugins: [ css(), summary(), vue({ css: false }), resolve(), terser() ]
+  plugins: [ css(), summary(), vue(), resolve(), terser() ]
 }
