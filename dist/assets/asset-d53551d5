@@ -1,0 +1,8 @@
+
+.gf-tooltip{
+  display: block;
+  top : v-bind(tooltipTop);
+  left : v-bind(tooltipleft);
+  background: whitesmoke;
+}
+

@@ -51,8 +51,12 @@ const y0                = ref(0);
 const showTooltip       = ref(false);
 const defaultXAxis      = ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
 const defaultYAxis      = ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
+
 const defaultTooltipFn  = d => `${d.key} : ${f(d.value)}`
 const tooltipHTML       = ref("");
+const tooltipTop        = ref('0px');
+const tooltipleft       = ref('0px');
+
 
 
 
@@ -96,6 +100,8 @@ const tooltipEnter = (e,d) => {
   showTooltip.value = true;
   console.log(e,d)
   tooltipHTML.value = tooltipFn.value(d);
+  tooltipTop.value  = `${e.clientY + 5}px`;
+  tooltipleft.value = `${e.clientX + 5}px`;
 }
 
 const tooltipMove = () => {
@@ -198,3 +204,11 @@ const tooltipOut = () => {
     <div class="gf-tooltip" v-if="showTooltip" v-html="tooltipHTML"></div>
   </div>
 </template>
+<style scoped>
+.gf-tooltip{
+  display: block;
+  top : v-bind(tooltipTop);
+  left : v-bind(tooltipleft);
+  background: whitesmoke;
+}
+</style>
