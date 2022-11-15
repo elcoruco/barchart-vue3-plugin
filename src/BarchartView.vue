@@ -104,7 +104,7 @@ const tooltipEnter = (e,d) => {
   tooltipLeft.value = `${e.clientX + 5}px`;
 }
 
-const tooltipMove = () => {
+const tooltipMove = e => {
   tooltipTop.value  = `${e.clientY + 5}px`;
   tooltipLeft.value = `${e.clientX + 5}px`;
 }
