@@ -8,6 +8,13 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import { format } from "d3-format";
 
 /**
+ * HELPERS
+ * 
+ */
+ const f = format(",");
+
+
+/**
  * PROPERTIES
  * 
  */
@@ -21,6 +28,7 @@ const props = defineProps({
   barPadding : Number,
   xAxis      : Object,
   yAxis      : Object,
+  tooltipFn  : Function
 });
 
 /**
@@ -41,8 +49,10 @@ const defaultColor      = ref('black');
 const defaultBackground = ref("white");
 const y0                = ref(0);
 const showTooltip       = ref(false);
-const defaultXAxis      =ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
-const defaultYAxis      =ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
+const defaultXAxis      = ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
+const defaultYAxis      = ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
+const defaultTooltipFn  = d => `${d.key} : ${f(d.value)}`
+const tooltipHTML       = ref("");
 
 
 
@@ -56,6 +66,7 @@ const color      = computed( () => props.color || defaultColor.value)
 const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
 const xAxis      = computed( () => props.xAxis ? Object.assign(defaultXAxis.value, props.xAxis) : props.xAxis )
 const yAxis      = computed( () => props.yAxis ? Object.assign(defaultYAxis.value, props.yAxis) : props.yAxis )
+const tooltipFn  = computed( () => props.tooltipFn || defaultTooltipFn );
 
 // SCALES
 //
@@ -78,14 +89,13 @@ const yScale = computed(() => {
 });
 
 /**
- * HELPERS
+ * MORE HELPERS
  * 
  */
-const f = format(",");
-
 const tooltipEnter = (e,d) => {
   showTooltip.value = true;
   console.log(e,d)
+  tooltipHTML.value = tooltipFn(d);
 }
 
 const tooltipMove = () => {
@@ -185,6 +195,6 @@ const tooltipOut = () => {
           stroke-width="2" />
       </g>
     </svg>
-    <div class="gf-tooltip" v-if="showTooltip">Este es un tooltip</div>
+    <div class="gf-tooltip" v-if="showTooltip" v-html="tooltipHTML"></div>
   </div>
 </template>
