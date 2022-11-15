@@ -41,6 +41,7 @@ const defaultColor      = ref('black');
 const defaultBackground = ref("white");
 const y0                = ref(0);
 const defaultXAxis      =ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
+const defaultYAxis      =ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
 
 
 
@@ -53,6 +54,7 @@ const margin     = computed( () => props.margin || defaultMargin.value)
 const color      = computed( () => props.color || defaultColor.value)
 const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
 const xAxis      = computed( () => props.xAxis ? Object.assign(defaultXAxis.value, props.xAxis) : props.xAxis )
+const yAxis      = computed( () => props.yAxis ? Object.assign(defaultYAxis.value, props.yAxis) : props.yAxis )
 
 // SCALES
 //
@@ -104,6 +106,7 @@ const f          = format(",");
           :transform="`translate(0, ${yScale(tick)})`"
           :key="`y-tick-${i}`">
           <line
+            v-if="yAxis.showGrid"
             :x1="0"
             y1="0"
             :x2="width - margin.left - margin.right"
@@ -114,6 +117,7 @@ const f          = format(",");
             y="0"
             x="-9"
             text-anchor="end"
+            :class="yAxis.textClass"
             alignment-baseline="middle">
             {{ f(tick) }}
           </text>
