@@ -80,8 +80,19 @@ const yScale = computed(() => {
  * HELPERS
  * 
  */
-const f          = format(",");
+const f = format(",");
 
+const tooltipEnter = () => {
+  console.log("yooo");
+}
+
+const tooltipMove = () => {
+  console.log("moooove");
+}
+
+const tooltipOut = () => {
+  console.log("out");
+}
 </script>
 <template>
   <div class="gf_barchart_container">
@@ -169,5 +180,9 @@ const f          = format(",");
           stroke-width="2" />
       </g>
     </svg>
+    <div class="gf-tooltip" 
+    @mouseenter="tooltipEnter"
+    @mousemove="tooltipMove"
+    @mouseout="tooltipOut">Este es un tooltip</div>
   </div>
 </template>
