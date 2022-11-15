@@ -95,7 +95,7 @@ const yScale = computed(() => {
 const tooltipEnter = (e,d) => {
   showTooltip.value = true;
   console.log(e,d)
-  tooltipHTML.value = tooltipFn(d);
+  tooltipHTML.value = tooltipFn.value(d);
 }
 
 const tooltipMove = () => {
