@@ -105,11 +105,12 @@ const tooltipEnter = (e,d) => {
 }
 
 const tooltipMove = () => {
-  console.log("moooove");
+  tooltipTop.value  = `${e.clientY + 5}px`;
+  tooltipLeft.value = `${e.clientX + 5}px`;
 }
 
 const tooltipOut = () => {
-  // showTooltip.value = false;
+  showTooltip.value = false;
 }
 </script>
 <template>
@@ -206,7 +207,8 @@ const tooltipOut = () => {
       top : tooltipTop, 
       left : tooltipLeft,
       display : 'block',
-      position : 'fixed'
+      position : 'fixed',
+      background : 'white'
     }"
     v-if="showTooltip"
     v-html="tooltipHTML"></div>
