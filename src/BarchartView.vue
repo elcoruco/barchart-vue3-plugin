@@ -56,6 +56,8 @@ const defaultTooltipFn  = d => `${d.key} : ${f(d.value)}`
 const tooltipHTML       = ref("");
 const tooltipTop        = ref('0px');
 const tooltipLeft       = ref('0px');
+const tooltipBackground = ref("white");
+const tooltipOffset     = ref(7);
 
 
 
@@ -93,19 +95,19 @@ const yScale = computed(() => {
 });
 
 /**
- * MORE HELPERS
+ * TOOLTIP HELPERS
  * 
  */
 const tooltipEnter = (e,d) => {
   showTooltip.value = true;
   tooltipHTML.value = tooltipFn.value(d);
-  tooltipTop.value  = `${e.clientY + 5}px`;
-  tooltipLeft.value = `${e.clientX + 5}px`;
+  tooltipTop.value  = `${e.clientY + tooltipOffset.value}px`;
+  tooltipLeft.value = `${e.clientX + tooltipOffset.value}px`;
 }
 
 const tooltipMove = e => {
-  tooltipTop.value  = `${e.clientY + 5}px`;
-  tooltipLeft.value = `${e.clientX + 5}px`;
+  tooltipTop.value  = `${e.clientY + tooltipOffset.value}px`;
+  tooltipLeft.value = `${e.clientX + tooltipOffset.value}px`;
 }
 
 const tooltipOut = () => {
@@ -207,7 +209,7 @@ const tooltipOut = () => {
       left : tooltipLeft,
       display : 'block',
       position : 'fixed',
-      background : 'white'
+      background : tooltipBackground
     }"
     v-if="showTooltip"
     v-html="tooltipHTML"></div>
