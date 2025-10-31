@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue 3 Bar Chart Plugin - Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 2rem;
+    }
+    
+    .chart-section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      color: #34495e;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .gf-tooltip {
+      padding: 8px 12px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-size: 14px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Vue 3 Bar Chart Plugin - Quick Test</h1>
+    
+    <div class="chart-section">
+      <h2>Example 1: Monthly Sales</h2>
+      <gf-barchart 
+        :data="salesData"
+        :width="600"
+        :height="400"
+        color="#3498db"
+        background="#f8f9fa"
+        :margin="{ top: 20, right: 30, bottom: 60, left: 70 }">
+      </gf-barchart>
+    </div>
+
+    <div class="chart-section">
+      <h2>Example 2: Quarterly Revenue (Custom Colors & Tooltip)</h2>
+      <gf-barchart 
+        :data="revenueData"
+        :width="600"
+        :height="400"
+        color="#e74c3c"
+        background="#ecf0f1"
+        :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+        :bar-padding="0.2"
+        :tooltip-fn="customTooltip">
+      </gf-barchart>
+    </div>
+
+    <div class="chart-section">
+      <h2>Example 3: Small Chart</h2>
+      <gf-barchart 
+        :data="salesData"
+        :width="400"
+        :height="300"
+        color="#2ecc71">
+      </gf-barchart>
+    </div>
+  </div>
+
+  <!-- Vue 3 from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+      }
+    }
+  </script>
+
+  <!-- Your plugin (built) -->
+  <script type="module">
+    import { createApp } from 'vue'
+    import BarchartPlugin from './dist/BarchartPlugin.js'
+
+    const app = createApp({
+      data() {
+        return {
+          salesData: [
+            { key: 'Jan', value: 4500 },
+            { key: 'Feb', value: 5200 },
+            { key: 'Mar', value: 4800 },
+            { key: 'Apr', value: 6100 },
+            { key: 'May', value: 7200 },
+            { key: 'Jun', value: 6800 }
+          ],
+          revenueData: [
+            { key: 'Q1', value: 15000 },
+            { key: 'Q2', value: 22000 },
+            { key: 'Q3', value: 18000 },
+            { key: 'Q4', value: 25000 }
+          ]
+        }
+      },
+      methods: {
+        customTooltip(d) {
+          return `<strong>${d.key}</strong><br/>Revenue: $${d.value.toLocaleString()}`
+        }
+      }
+    })
+
+    app.use(BarchartPlugin)
+    app.mount('#app')
+  </script>
+</body>
+</html>

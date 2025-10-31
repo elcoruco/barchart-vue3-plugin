@@ -48,6 +48,33 @@ const chartData = [
 
 🚀 **[Publishing Guide](./PUBLISHING.md)** - Instructions for maintaining and updating the package
 
+## Development & Testing
+
+### Quick Test with HTML
+
+A simple `test.html` file is included for quick testing during development:
+
+```bash
+# 1. Build the plugin
+npx rollup -c
+
+# 2. Start a local server
+python3 -m http.server 8080
+
+# 3. Open in browser
+# http://localhost:8080/test.html
+```
+
+The test file uses Vue 3 from CDN and imports the built plugin directly - no complex setup needed!
+
+### Development Workflow
+
+1. Make changes to `src/BarchartView.vue` or `src/BarchartPlugin.js`
+2. Rebuild: `npx rollup -c`
+3. Refresh the browser to see your changes
+
+The `test.html` file includes multiple chart examples demonstrating different configurations and features.
+
 ## Example
 
 ```vue

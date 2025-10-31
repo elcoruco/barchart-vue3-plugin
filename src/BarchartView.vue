@@ -70,8 +70,8 @@ const background = computed( () => props.background || defaultBackground.value)
 const margin     = computed( () => props.margin || defaultMargin.value)
 const color      = computed( () => props.color || defaultColor.value)
 const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
-const xAxis      = computed( () => props.xAxis ? Object.assign(defaultXAxis.value, props.xAxis) : props.xAxis )
-const yAxis      = computed( () => props.yAxis ? Object.assign(defaultYAxis.value, props.yAxis) : props.yAxis )
+const xAxis      = computed( () => props.xAxis ? Object.assign({}, defaultXAxis.value, props.xAxis) : defaultXAxis.value )
+const yAxis      = computed( () => props.yAxis ? Object.assign({}, defaultYAxis.value, props.yAxis) : defaultYAxis.value )
 const tooltipFn  = computed( () => props.tooltipFn || defaultTooltipFn );
 
 // SCALES
