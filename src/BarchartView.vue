@@ -19,16 +19,19 @@ import { format } from "d3-format";
  * 
  */
 const props = defineProps({ 
-  width      : Number, 
-  height     : Number, 
-  background : String,
-  data       : Array,
-  margin     : Object,
-  color      : String,
-  barPadding : Number,
-  xAxis      : Object,
-  yAxis      : Object,
-  tooltipFn  : Function
+  width        : Number, 
+  height       : Number, 
+  background   : String,
+  data         : Array,
+  margin       : Object,
+  color        : String,
+  colors       : Array,
+  barPadding   : Number,
+  groupPadding : Number,
+  xAxis        : Object,
+  yAxis        : Object,
+  tooltipFn    : Function,
+  series       : Array
 });
 
 /**
@@ -38,21 +41,27 @@ const props = defineProps({
 
 // DEFAULT VALUES
 //
-const defaultMargin     = ref({top : 10, right : 10, bottom : 50, left : 50});
-const defaultHeight     = ref(400);
-const defaultWidth      = ref(400);
-const xLabel            = ref();
-const yLabel            = ref();
-const minWidth          = ref();
-const defaultBarPadding = ref(.1);
-const defaultColor      = ref('black');
-const defaultBackground = ref("white");
-const y0                = ref(0);
-const defaultXAxis      = ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
-const defaultYAxis      = ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
+const defaultMargin       = ref({top : 10, right : 10, bottom : 50, left : 50});
+const defaultHeight       = ref(400);
+const defaultWidth        = ref(400);
+const xLabel              = ref();
+const yLabel              = ref();
+const minWidth            = ref();
+const defaultBarPadding   = ref(.1);
+const defaultGroupPadding = ref(.05);
+const defaultColor        = ref('black');
+const defaultColors       = ref(['#3498db', '#e74c3c', '#f39c12', '#2ecc71', '#9b59b6', '#1abc9c']);
+const defaultBackground   = ref("white");
+const y0                  = ref(0);
+const defaultXAxis        = ref({ show : true, textClass : '', showGrid : false, gridClass : ''})
+const defaultYAxis        = ref({ show : true, textClass : '', showGrid : true, gridClass : ''})
+const defaultSeries       = ref([]);
 
 const showTooltip       = ref(false);
-const defaultTooltipFn  = d => `${d.key} : ${f(d.value)}`
+const defaultTooltipFn  = d => {
+  const seriesName = d.seriesName ? `${d.seriesName}: ` : '';
+  return `${d.key} - ${seriesName}${f(d.value)}`;
+}
 const tooltipHTML       = ref("");
 const tooltipTop        = ref('0px');
 const tooltipLeft       = ref('0px');
@@ -64,43 +73,91 @@ const tooltipOffset     = ref(7);
 
 // PROPERTIES
 //
-const width      = computed( () => props.width || defaultWidth.value)
-const height     = computed( () => props.height || defaultHeight.value)
-const background = computed( () => props.background || defaultBackground.value)
-const margin     = computed( () => props.margin || defaultMargin.value)
-const color      = computed( () => props.color || defaultColor.value)
-const barPadding = computed( () => props.barPadding || defaultBarPadding.value)
-const xAxis      = computed( () => props.xAxis ? Object.assign({}, defaultXAxis.value, props.xAxis) : defaultXAxis.value )
-const yAxis      = computed( () => props.yAxis ? Object.assign({}, defaultYAxis.value, props.yAxis) : defaultYAxis.value )
-const tooltipFn  = computed( () => props.tooltipFn || defaultTooltipFn );
+const width        = computed( () => props.width || defaultWidth.value)
+const height       = computed( () => props.height || defaultHeight.value)
+const background   = computed( () => props.background || defaultBackground.value)
+const margin       = computed( () => props.margin || defaultMargin.value)
+const color        = computed( () => props.color || defaultColor.value)
+const colors       = computed( () => props.colors || defaultColors.value)
+const barPadding   = computed( () => props.barPadding || defaultBarPadding.value)
+const groupPadding = computed( () => props.groupPadding !== undefined ? props.groupPadding : defaultGroupPadding.value)
+const xAxis        = computed( () => props.xAxis ? Object.assign({}, defaultXAxis.value, props.xAxis) : defaultXAxis.value )
+const yAxis        = computed( () => props.yAxis ? Object.assign({}, defaultYAxis.value, props.yAxis) : defaultYAxis.value )
+const tooltipFn    = computed( () => props.tooltipFn || defaultTooltipFn );
+const series       = computed( () => props.series || defaultSeries.value);
+
+// Check if data is grouped (array of arrays)
+const isGrouped = computed(() => {
+  return props.data && props.data.length > 0 && Array.isArray(props.data[0].values);
+});
+
+// Normalized data structure
+const normalizedData = computed(() => {
+  if (!props.data) return [];
+  
+  if (isGrouped.value) {
+    // Data is already in grouped format: [{key: 'Jan', values: [100, 200, 300]}]
+    return props.data;
+  } else {
+    // Convert simple format to grouped: [{key: 'Jan', value: 100}] -> [{key: 'Jan', values: [100]}]
+    return props.data.map(d => ({
+      key: d.key,
+      values: [d.value]
+    }));
+  }
+});
+
+// Number of series (bars per group)
+const seriesCount = computed(() => {
+  if (normalizedData.value.length === 0) return 0;
+  return normalizedData.value[0].values.length;
+});
 
 // SCALES
 //
 const xScale = computed( () => {
   return scaleBand()
-    .domain(props.data.map(d => d.key))
+    .domain(normalizedData.value.map(d => d.key))
     .range([margin.value.left, width.value - margin.value.right])
     .padding(barPadding.value)
 })
 
+// Scale for positioning bars within a group
+const xScaleGroup = computed(() => {
+  return scaleBand()
+    .domain(Array.from({length: seriesCount.value}, (_, i) => i))
+    .range([0, xScale.value.bandwidth()])
+    .padding(groupPadding.value)
+})
+
 const yScale = computed(() => {
-  let curr = props.data.map(d => d.value);
-  let domain = [y0.value, Math.max(...curr)];
+  // Find max value across all series
+  let allValues = normalizedData.value.flatMap(d => d.values);
+  let domain = [y0.value, Math.max(...allValues)];
   let range = [height.value - margin.value.bottom, margin.value.top];
 
-  
   return scaleLinear()
     .domain(domain)
-        .rangeRound(range);
+    .rangeRound(range);
 });
 
 /**
  * TOOLTIP HELPERS
  * 
  */
-const tooltipEnter = (e,d) => {
+const tooltipEnter = (e, d, seriesIndex) => {
   showTooltip.value = true;
-  tooltipHTML.value = tooltipFn.value(d);
+  
+  // Create data object for tooltip function
+  const tooltipData = {
+    key: d.key,
+    value: d.values[seriesIndex],
+    seriesIndex: seriesIndex,
+    seriesName: series.value[seriesIndex] || `Series ${seriesIndex + 1}`,
+    allValues: d.values
+  };
+  
+  tooltipHTML.value = tooltipFn.value(tooltipData);
   tooltipTop.value  = `${e.clientY + tooltipOffset.value}px`;
   tooltipLeft.value = `${e.clientX + tooltipOffset.value}px`;
 }
@@ -112,6 +169,14 @@ const tooltipMove = e => {
 
 const tooltipOut = () => {
   showTooltip.value = false;
+}
+
+// Get color for a specific series
+const getSeriesColor = (seriesIndex) => {
+  if (seriesCount.value === 1) {
+    return color.value;
+  }
+  return colors.value[seriesIndex % colors.value.length];
 }
 </script>
 <template>
@@ -163,18 +228,22 @@ const tooltipOut = () => {
           stroke="black" /> -->
       </g>
 
-      <rect
-        v-for="(d, i) of data"
-        :key="`bar-${i}`"
-        :width="xScale.bandwidth()"
-        :height="height - yScale(d.value) - margin.bottom"
-        :x="xScale(d.key)"
-        :y="yScale(d.value)"
-        class="gf_barchart_item"
-        :fill="color"
-        @mouseenter="e => tooltipEnter(e, d)"
-        @mousemove="tooltipMove"
-        @mouseout="tooltipOut"></rect>
+      <!-- Bars (grouped) -->
+      <g v-for="(d, i) of normalizedData" :key="`group-${i}`">
+        <rect
+          v-for="(value, seriesIndex) in d.values"
+          :key="`bar-${i}-${seriesIndex}`"
+          :width="xScaleGroup.bandwidth()"
+          :height="height - yScale(value) - margin.bottom"
+          :x="xScale(d.key) + xScaleGroup(seriesIndex)"
+          :y="yScale(value)"
+          class="gf_barchart_item"
+          :fill="getSeriesColor(seriesIndex)"
+          @mouseenter="e => tooltipEnter(e, d, seriesIndex)"
+          @mousemove="tooltipMove"
+          @mouseout="tooltipOut">
+        </rect>
+      </g>
       
       <!-- xScaleAxis -->
       <g :transform="`translate(0, ${height - margin.bottom})`">

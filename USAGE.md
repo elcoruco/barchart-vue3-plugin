@@ -1,6 +1,6 @@
 # Vue 3 Bar Chart Plugin - Usage Guide
 
-A simple and customizable bar chart component for Vue 3 applications, built with D3.js scales and SVG rendering.
+A simple and customizable bar chart component for Vue 3 applications, built with D3.js scales and SVG rendering. Supports both simple bar charts and grouped bar charts for comparing multiple data series.
 
 ## Installation
 
@@ -52,7 +52,11 @@ const chartData = ref([
 
 ## Data Format
 
-The component expects data in the following format:
+The component supports two data formats:
+
+### Simple Bar Chart
+
+For a single data series, use objects with `key` and `value`:
 
 ```javascript
 const data = [
@@ -65,19 +69,40 @@ const data = [
 - `key`: String - The label for each bar (displayed on X-axis)
 - `value`: Number - The numeric value for each bar (determines bar height)
 
+### Grouped Bar Chart
+
+For multiple data series (grouped bars), use objects with `key` and `values` (array):
+
+```javascript
+const data = [
+  { key: 'Q1', values: [100, 150, 120] },
+  { key: 'Q2', values: [180, 140, 160] },
+  { key: 'Q3', values: [200, 190, 210] },
+  { key: 'Q4', values: [220, 200, 230] }
+]
+```
+
+- `key`: String - The label for each group (displayed on X-axis)
+- `values`: Array of Numbers - The values for each series in the group
+
+Each array in `values` should have the same length across all data points.
+
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `data` | Array | Required | Array of objects with `key` and `value` properties |
+| `data` | Array | Required | Array of objects with `key` and `value` (simple) or `key` and `values[]` (grouped) |
 | `width` | Number | 400 | Chart width in pixels |
 | `height` | Number | 400 | Chart height in pixels |
 | `background` | String | "white" | Background color of the chart |
-| `color` | String | "black" | Fill color for the bars |
+| `color` | String | "black" | Fill color for bars (used in simple charts) |
+| `colors` | Array | Predefined palette | Array of colors for grouped charts |
 | `margin` | Object | `{top: 10, right: 10, bottom: 50, left: 50}` | Chart margins |
-| `barPadding` | Number | 0.1 | Padding between bars (0-1) |
+| `barPadding` | Number | 0.1 | Padding between bar groups (0-1) |
+| `groupPadding` | Number | 0.05 | Padding between bars within a group (0-1) |
 | `xAxis` | Object | See below | X-axis configuration |
 | `yAxis` | Object | See below | Y-axis configuration |
+| `series` | Array | `[]` | Names for each data series (used in tooltips) |
 | `tooltipFn` | Function | Default formatter | Custom tooltip content function |
 
 ### Axis Configuration
@@ -102,9 +127,16 @@ const data = [
 }
 ```
 
+### Default Color Palette
+
+For grouped charts, if you don't provide a `colors` prop, the following palette is used:
+```javascript
+['#3498db', '#e74c3c', '#f39c12', '#2ecc71', '#9b59b6', '#1abc9c']
+```
+
 ## Examples
 
-### Basic Chart
+### Basic Simple Chart
 ```vue
 <template>
   <gf-barchart 
@@ -126,6 +158,69 @@ const salesData = [
 </script>
 ```
 
+### Grouped Bar Chart (Multiple Series)
+```vue
+<template>
+  <gf-barchart 
+    :data="productSales"
+    :width="800"
+    :height="400"
+    :colors="['#3498db', '#e74c3c', '#2ecc71']"
+    :series="['Product A', 'Product B', 'Product C']"
+    background="#f8f9fa"
+    :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+    :bar-padding="0.3"
+    :group-padding="0.05"
+  />
+</template>
+
+<script setup>
+const productSales = [
+  { key: 'Jan', values: [3200, 2800, 1900] },
+  { key: 'Feb', values: [3800, 3200, 2100] },
+  { key: 'Mar', values: [2900, 3500, 2400] },
+  { key: 'Apr', values: [4200, 2900, 2800] },
+  { key: 'May', values: [3600, 3800, 2200] },
+  { key: 'Jun', values: [4100, 3300, 2600] }
+]
+</script>
+```
+
+### Demographic Data (Real-world Example)
+```vue
+<template>
+  <gf-barchart 
+    :data="demographicsData"
+    :width="900"
+    :height="500"
+    :colors="['#3498db', '#f39c12', '#95a5a6']"
+    :series="['Male', 'Female', 'Other']"
+    background="#ffffff"
+    :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+    :tooltip-fn="demographicTooltip"
+  />
+</template>
+
+<script setup>
+const demographicsData = [
+  { key: '0-10', values: [750, 600, 0] },
+  { key: '11-20', values: [1950, 1750, 550] },
+  { key: '21-30', values: [2900, 1250, 150] },
+  { key: '31-40', values: [3400, 1750, 350] },
+  { key: '41-50', values: [1350, 1350, 100] },
+  { key: '51-60', values: [2350, 1450, 75] },
+  { key: '61-70', values: [2500, 2300, 950] },
+  { key: '71-80', values: [4000, 2900, 200] },
+  { key: '81-90', values: [1350, 1350, 250] },
+  { key: '91-100', values: [2350, 2350, 200] }
+]
+
+const demographicTooltip = (d) => {
+  return `<strong>${d.key} years</strong><br/>${d.seriesName}: ${d.value.toLocaleString()}`
+}
+</script>
+```
+
 ### Customized Chart with Margins
 ```vue
 <template>
@@ -141,6 +236,8 @@ const salesData = [
 ```
 
 ### Custom Tooltip
+
+#### Simple Chart Tooltip
 ```vue
 <template>
   <gf-barchart 
@@ -151,10 +248,38 @@ const salesData = [
 
 <script setup>
 const customTooltip = (d) => {
+  // For simple charts, d has: { key, value }
   return `<strong>${d.key}</strong><br>Sales: $${d.value.toLocaleString()}`
 }
 </script>
 ```
+
+#### Grouped Chart Tooltip
+```vue
+<template>
+  <gf-barchart 
+    :data="groupedData"
+    :series="['Product A', 'Product B', 'Product C']"
+    :tooltipFn="groupedTooltip"
+  />
+</template>
+
+<script setup>
+const groupedTooltip = (d) => {
+  // For grouped charts, d has: 
+  // { key, value, seriesIndex, seriesName, allValues }
+  return `
+    <strong>${d.key}</strong><br/>
+    ${d.seriesName}: ${d.value.toLocaleString()}<br/>
+    <em>Series ${d.seriesIndex + 1} of ${d.allValues.length}</em>
+  `
+}
+</script>
+```
+
+The tooltip function receives different data depending on chart type:
+- **Simple charts**: `{ key: string, value: number }`
+- **Grouped charts**: `{ key: string, value: number, seriesIndex: number, seriesName: string, allValues: number[] }`
 
 ### Styled Axes
 ```vue

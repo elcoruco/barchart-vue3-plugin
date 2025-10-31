@@ -1,11 +1,12 @@
 # Vue 3 Bar Chart Plugin
 
-A simple and customizable bar chart component for Vue 3 applications, built with D3.js scales and SVG rendering.
+A simple and customizable bar chart component for Vue 3 applications, built with D3.js scales and SVG rendering. Supports both simple and grouped bar charts.
 
 ## Features
 
 - 🎨 **Customizable**: Configure colors, dimensions, margins, and styling
 - 📊 **Interactive**: Built-in hover tooltips with custom formatting
+- 📈 **Grouped Bars**: Support for multiple data series with grouped bars
 - 🎯 **Lightweight**: Minimal dependencies (D3.js scales only)
 - 🔧 **Flexible**: Extensive props for customization
 - 📱 **Responsive**: SVG-based rendering that scales
@@ -16,6 +17,8 @@ A simple and customizable bar chart component for Vue 3 applications, built with
 ```bash
 npm install @elcoruco/vue3-bars-chart-plugin
 ```
+
+### Simple Bar Chart
 
 ```javascript
 // main.js
@@ -38,6 +41,26 @@ const chartData = [
   { key: 'Jan', value: 100 },
   { key: 'Feb', value: 150 },
   { key: 'Mar', value: 200 }
+]
+</script>
+```
+
+### Grouped Bar Chart
+
+```vue
+<template>
+  <gf-barchart 
+    :data="groupedData" 
+    :colors="['#3498db', '#e74c3c', '#2ecc71']"
+    :series="['Product A', 'Product B', 'Product C']"
+  />
+</template>
+
+<script setup>
+const groupedData = [
+  { key: 'Jan', values: [100, 150, 120] },
+  { key: 'Feb', values: [180, 140, 160] },
+  { key: 'Mar', values: [200, 190, 210] }
 ]
 </script>
 ```
@@ -77,6 +100,7 @@ The `test.html` file includes multiple chart examples demonstrating different co
 
 ## Example
 
+### Simple Bar Chart
 ```vue
 <gf-barchart 
   :data="salesData"
@@ -88,19 +112,37 @@ The `test.html` file includes multiple chart examples demonstrating different co
 />
 ```
 
+### Grouped Bar Chart
+```vue
+<gf-barchart 
+  :data="groupedSalesData"
+  :width="800"
+  :height="400"
+  :colors="['#3498db', '#e74c3c', '#2ecc71']"
+  :series="['Product A', 'Product B', 'Product C']"
+  background="#f8f9fa"
+  :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+  :bar-padding="0.3"
+  :group-padding="0.05"
+/>
+```
+
 ## Props Overview
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `data` | Array | Data array with `{key, value}` objects |
+| `data` | Array | Data array with `{key, value}` or `{key, values[]}` objects |
 | `width` | Number | Chart width (default: 400) |
 | `height` | Number | Chart height (default: 400) |
-| `color` | String | Bar color (default: "black") |
+| `color` | String | Bar color for simple charts (default: "black") |
+| `colors` | Array | Array of colors for grouped charts (default: predefined palette) |
 | `background` | String | Chart background (default: "white") |
 | `margin` | Object | Chart margins |
-| `barPadding` | Number | Space between bars |
+| `barPadding` | Number | Space between groups |
+| `groupPadding` | Number | Space between bars in a group |
 | `xAxis` | Object | X-axis configuration |
 | `yAxis` | Object | Y-axis configuration |
+| `series` | Array | Names for each data series (for tooltips) |
 | `tooltipFn` | Function | Custom tooltip formatter |
 
 ## Dependencies

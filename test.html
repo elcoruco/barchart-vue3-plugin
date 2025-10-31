@@ -46,7 +46,7 @@
     <h1>Vue 3 Bar Chart Plugin - Quick Test</h1>
     
     <div class="chart-section">
-      <h2>Example 1: Monthly Sales</h2>
+      <h2>Example 1: Monthly Sales (Simple)</h2>
       <gf-barchart 
         :data="salesData"
         :width="600"
@@ -58,7 +58,23 @@
     </div>
 
     <div class="chart-section">
-      <h2>Example 2: Quarterly Revenue (Custom Colors & Tooltip)</h2>
+      <h2>Example 2: Age Group Demographics (Grouped Bars)</h2>
+      <gf-barchart 
+        :data="demographicsData"
+        :width="800"
+        :height="400"
+        :colors="['#3498db', '#f39c12', '#95a5a6']"
+        background="#f8f9fa"
+        :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+        :bar-padding="0.3"
+        :group-padding="0.05"
+        :series="['Male', 'Female', 'Other']"
+        :tooltip-fn="groupedTooltip">
+      </gf-barchart>
+    </div>
+
+    <div class="chart-section">
+      <h2>Example 3: Quarterly Revenue (Custom Colors & Tooltip)</h2>
       <gf-barchart 
         :data="revenueData"
         :width="600"
@@ -72,12 +88,16 @@
     </div>
 
     <div class="chart-section">
-      <h2>Example 3: Small Chart</h2>
+      <h2>Example 4: Product Sales Comparison (3 Products)</h2>
       <gf-barchart 
-        :data="salesData"
-        :width="400"
-        :height="300"
-        color="#2ecc71">
+        :data="productSalesData"
+        :width="700"
+        :height="400"
+        :colors="['#e74c3c', '#3498db', '#2ecc71']"
+        background="#ffffff"
+        :margin="{ top: 20, right: 30, bottom: 60, left: 70 }"
+        :series="['Product A', 'Product B', 'Product C']"
+        :tooltip-fn="productTooltip">
       </gf-barchart>
     </div>
   </div>
@@ -112,12 +132,38 @@
             { key: 'Q2', value: 22000 },
             { key: 'Q3', value: 18000 },
             { key: 'Q4', value: 25000 }
+          ],
+          demographicsData: [
+            { key: '0-10', values: [750, 600, 0] },
+            { key: '11-20', values: [1950, 1750, 550] },
+            { key: '21-30', values: [2900, 1250, 150] },
+            { key: '31-40', values: [3400, 1750, 350] },
+            { key: '41-50', values: [1350, 1350, 100] },
+            { key: '51-60', values: [2350, 1450, 75] },
+            { key: '61-70', values: [2500, 2300, 950] },
+            { key: '71-80', values: [4000, 2900, 200] },
+            { key: '81-90', values: [1350, 1350, 250] },
+            { key: '91-100', values: [2350, 2350, 200] },
+          ],
+          productSalesData: [
+            { key: 'Jan', values: [3200, 2800, 1900] },
+            { key: 'Feb', values: [3800, 3200, 2100] },
+            { key: 'Mar', values: [2900, 3500, 2400] },
+            { key: 'Apr', values: [4200, 2900, 2800] },
+            { key: 'May', values: [3600, 3800, 2200] },
+            { key: 'Jun', values: [4100, 3300, 2600] }
           ]
         }
       },
       methods: {
         customTooltip(d) {
           return `<strong>${d.key}</strong><br/>Revenue: $${d.value.toLocaleString()}`
+        },
+        groupedTooltip(d) {
+          return `<strong>${d.key} years</strong><br/>${d.seriesName}: ${d.value.toLocaleString()}`
+        },
+        productTooltip(d) {
+          return `<strong>${d.key}</strong><br/>${d.seriesName}: ${d.value.toLocaleString()} units`
         }
       }
     })
